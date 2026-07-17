@@ -1,4 +1,4 @@
-const CACHE_NAME = 'huddlesnap-v3';
+const CACHE_NAME = 'huddlesnap-v3.2';
 const ASSETS = [
   './',
   './index.html',
@@ -6,6 +6,7 @@ const ASSETS = [
   './icon.svg',
   './sounds/whistle.mp3',
   './sounds/siren.mp3',
+  './sounds/ten_seconds.mp3', // 🔥 НОВОЕ
 ];
 
 self.addEventListener('install', (event) => {

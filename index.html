@@ -12,7 +12,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/svg+xml" href="icon.svg" />
   <link rel="apple-touch-icon" href="icon.svg" />
-  <title>HuddleSnap</title>
+  <title>HuddleSnap v3.2</title>
   <style>
     * {
       box-sizing: border-box;
@@ -45,6 +45,13 @@
       letter-spacing: 2px;
       color: #fbbf24;
       text-transform: uppercase;
+    }
+
+    .version {
+      font-size: 12px;
+      color: #64748b;
+      margin-left: 8px;
+      font-weight: normal;
     }
 
     .setup {
@@ -198,7 +205,7 @@
 
 <body>
   <div id="app">
-    <h1>🏈 HuddleSnap</h1>
+    <h1>🏈 HuddleSnap<span class="version">v3.2</span></h1>
 
     <div id="screen-setup" class="setup">
       <label for="duration">Время хаддла (сек)</label>
@@ -213,7 +220,7 @@
     </div>
 
     <div id="screen-ready" class="hidden" style="flex:1; display:flex;">
-      <button id="btn-ball-set" class="btn-ball">⚽ Мяч установлен</button>
+      <button id="btn-ball-set" class="btn-ball">🏈 Мяч установлен</button>
     </div>
 
     <div id="screen-running" class="hidden" style="flex:1; display:flex; flex-direction:column; gap:12px;">
@@ -251,7 +258,7 @@
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     const supportsVibration = 'vibrate' in navigator;
 
-    // ====== ВИБРАЦИЯ (с проверкой поддержки) ======
+    // ====== ВИБРАЦИЯ ======
     const Vibrate = {
       tap: () => supportsVibration && navigator.vibrate(20),
       snap: () => supportsVibration && navigator.vibrate(60),
@@ -260,10 +267,9 @@
       stop: () => supportsVibration && navigator.vibrate(0),
     };
 
-    // ====== ЗВУК (Web Audio API для iOS совместимости) ======
+    // ====== ЗВУК (Web Audio API) ======
     let audioCtx = null;
     let audioBuffers = {};
-    let audioUnlocked = false;
 
     function getAudio() {
       if (!audioCtx) {
@@ -275,7 +281,6 @@
       return audioCtx;
     }
 
-    // Загрузка MP3 в AudioBuffer (надёжнее для iOS)
     async function loadSound(name, url) {
       try {
         const ctx = getAudio();
@@ -283,13 +288,12 @@
         const arrayBuffer = await response.arrayBuffer();
         const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
         audioBuffers[name] = audioBuffer;
-        console.log(`Sound loaded: ${name}`);
+        console.log(`✓ Sound loaded: ${name}`);
       } catch (err) {
-        console.warn(`Failed to load sound: ${name}`, err);
+        console.warn(`✗ Failed to load sound: ${name}`, err);
       }
     }
 
-    // Воспроизведение AudioBuffer
     function playBuffer(name) {
       const ctx = getAudio();
       const buffer = audioBuffers[name];
@@ -303,7 +307,7 @@
       source.start(0);
     }
 
-    // Fallback: синтезированные звуки (если MP3 не загрузились)
+    // Fallback: синтезированные звуки
     function playWhistleSynth() {
       const ctx = getAudio();
       const t0 = ctx.currentTime;
@@ -350,47 +354,13 @@
       osc.stop(t0 + duration + 0.05);
     }
 
-    // Универсальная функция воспроизведения
     function playSound(name) {
       if (audioBuffers[name]) {
         playBuffer(name);
       } else {
-        // Fallback на синтез
         if (name === 'whistle') playWhistleSynth();
         else if (name === 'siren') playSirenSynth();
       }
-    }
-
-    // ====== РЕЧЬ (с iOS-спецификой) ======
-    let speechUnlocked = false;
-
-    function unlockSpeech() {
-      if (speechUnlocked) return;
-      if (!('speechSynthesis' in window)) return;
-
-      // На iOS нужно произнести что-то в ответ на клик
-      const u = new SpeechSynthesisUtterance(' ');
-      u.volume = 0;
-      window.speechSynthesis.speak(u);
-      speechUnlocked = true;
-    }
-
-    function speak(text) {
-      if (!('speechSynthesis' in window)) return;
-
-      // Отменяем предыдущее
-      window.speechSynthesis.cancel();
-
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = 'ru-RU';
-      u.rate = 1.0;
-      u.pitch = 1.0;
-      u.volume = 1.0;
-
-      // На iOS иногда нужно подождать
-      setTimeout(() => {
-        window.speechSynthesis.speak(u);
-      }, 10);
     }
 
     // ====== ЛОГИКА ======
@@ -442,7 +412,7 @@
 
       if (remaining === 10 && !tenSecAnnounced) {
         tenSecAnnounced = true;
-        speak('10 секунд');
+        playSound('ten_seconds'); // 🔥 Теперь воспроизводится MP3
         Vibrate.ten();
       }
 
@@ -451,7 +421,6 @@
         tickInterval = null;
         playSound('siren');
         Vibrate.siren();
-        speak('Время');
         setTimeout(() => {
           state = State.READY;
           showScreen('ready');
@@ -466,7 +435,6 @@
 
       clearInterval(tickInterval);
       tickInterval = null;
-      window.speechSynthesis.cancel();
       Vibrate.stop();
 
       timerEl.classList.remove('warn', 'danger');
@@ -505,7 +473,6 @@
       clearInterval(snapInterval);
       tickInterval = null;
       snapInterval = null;
-      window.speechSynthesis.cancel();
       Vibrate.stop();
       Vibrate.tap();
       state = State.READY;
@@ -516,13 +483,12 @@
     btnStartSetup.addEventListener('click', () => {
       duration = parseInt(selDuration.value, 10);
 
-      // 🔥 РАЗБЛОКИРОВКА АУДИО И РЕЧИ (критично для iOS)
       getAudio();
-      unlockSpeech();
 
-      // Загружаем звуки при первом клике
+      // Загружаем все звуки
       loadSound('whistle', 'sounds/whistle.mp3');
       loadSound('siren', 'sounds/siren.mp3');
+      loadSound('ten_seconds', 'sounds/ten_seconds.mp3'); // 🔥 НОВОЕ
 
       Vibrate.tap();
       state = State.READY;
@@ -531,7 +497,6 @@
 
     btnBallSet.addEventListener('click', () => {
       getAudio();
-      unlockSpeech();
       Vibrate.tap();
       startHuddle();
     });

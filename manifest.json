@@ -16,5 +16,6 @@
   "scope": "./",
   "short_name": "HuddleSnap",
   "start_url": "./index.html",
-  "theme_color": "#0f172a"
+  "theme_color": "#0f172a",
+  "version": "3.2"
 }
