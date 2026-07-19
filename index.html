@@ -12,202 +12,17 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/svg+xml" href="icon.svg" />
   <link rel="apple-touch-icon" href="icon.svg" />
-  <title>HuddleSnap v3.2</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    html,
-    body {
-      height: 100%;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #0f172a;
-      color: #f1f5f9;
-      overflow: hidden;
-      user-select: none;
-    }
-
-    #app {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      padding: 16px;
-      gap: 16px;
-    }
-
-    h1 {
-      text-align: center;
-      font-size: 22px;
-      letter-spacing: 2px;
-      color: #fbbf24;
-      text-transform: uppercase;
-    }
-
-    .version {
-      font-size: 12px;
-      color: #64748b;
-      margin-left: 8px;
-      font-weight: normal;
-    }
-
-    .setup {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 24px;
-    }
-
-    .setup label {
-      font-size: 18px;
-      color: #cbd5e1;
-    }
-
-    .setup select {
-      font-size: 28px;
-      padding: 12px 24px;
-      border-radius: 12px;
-      border: 2px solid #334155;
-      background: #1e293b;
-      color: #f1f5f9;
-      text-align: center;
-    }
-
-    .btn-ball {
-      flex: 1;
-      width: 100%;
-      font-size: 32px;
-      font-weight: 800;
-      text-transform: uppercase;
-      background: linear-gradient(135deg, #16a34a, #15803d);
-      color: white;
-      border: none;
-      border-radius: 24px;
-      box-shadow: 0 8px 0 #14532d, 0 12px 24px rgba(0, 0, 0, .4);
-      cursor: pointer;
-      transition: transform .08s, box-shadow .08s;
-    }
-
-    .btn-ball:active {
-      transform: translateY(6px);
-      box-shadow: 0 2px 0 #14532d, 0 4px 12px rgba(0, 0, 0, .4);
-    }
-
-    .timer-wrap {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .timer {
-      font-size: 140px;
-      font-weight: 900;
-      font-variant-numeric: tabular-nums;
-      color: #f1f5f9;
-      text-shadow: 0 0 24px rgba(251, 191, 36, .4);
-      transition: color .2s;
-    }
-
-    .timer.warn {
-      color: #fbbf24;
-    }
-
-    .timer.danger {
-      color: #ef4444;
-      animation: pulse .5s infinite alternate;
-    }
-
-    .timer.snap-count {
-      color: #60a5fa;
-      text-shadow: 0 0 32px rgba(96, 165, 250, .6);
-    }
-
-    @keyframes pulse {
-      to {
-        transform: scale(1.05);
-      }
-    }
-
-    .status {
-      font-size: 18px;
-      color: #94a3b8;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-
-    .controls {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      flex: 1;
-      min-height: 0;
-    }
-
-    .btn {
-      flex: 1;
-      border: none;
-      border-radius: 18px;
-      font-weight: 800;
-      text-transform: uppercase;
-      color: white;
-      cursor: pointer;
-      transition: transform .08s, filter .2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .btn:active {
-      transform: scale(.97);
-    }
-
-    .btn-snap {
-      font-size: 48px;
-      background: linear-gradient(135deg, #2563eb, #1d4ed8);
-      box-shadow: 0 6px 0 #1e3a8a;
-    }
-
-    .btn-2kb {
-      font-size: 32px;
-      background: linear-gradient(135deg, #dc2626, #991b1b);
-      box-shadow: 0 6px 0 #7f1d1d;
-    }
-
-    .btn:disabled {
-      filter: grayscale(.6) brightness(.6);
-      cursor: not-allowed;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    #install-hint {
-      position: fixed;
-      bottom: 8px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 11px;
-      color: #64748b;
-      text-align: center;
-      pointer-events: none;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css" />
+  <title>HuddleSnap v3.6</title>
 </head>
 
 <body>
   <div id="app">
-    <h1>🏈 HuddleSnap<span class="version">v3.2</span></h1>
+    <h1>🏈 HuddleSnap<span class="version">v3.6</span></h1>
 
+    <!-- Экран настройки -->
     <div id="screen-setup" class="setup">
+      <div id="down-setup" class="down-display-top">1st</div>
       <label for="duration">Время хаддла (сек)</label>
       <select id="duration">
         <option value="25">25</option>
@@ -219,11 +34,16 @@
       <button id="btn-start-setup" class="btn-ball">Продолжить</button>
     </div>
 
-    <div id="screen-ready" class="hidden" style="flex:1; display:flex;">
-      <button id="btn-ball-set" class="btn-ball">🏈 Мяч установлен</button>
+    <!-- Экран готовности -->
+    <div id="screen-ready" class="hidden ready-screen">
+      <div id="down-ready" class="down-display-top">1st</div>
+      <button id="btn-ball-set" class="btn-ball">🏈 Время запущено</button>
+      <button id="btn-penalty-ready" class="btn btn-penalty hidden">Нарушение</button>
     </div>
 
+    <!-- Экран работы таймера -->
     <div id="screen-running" class="hidden" style="flex:1; display:flex; flex-direction:column; gap:12px;">
+      <div id="down-running" class="down-display-top">1st</div>
       <div class="timer-wrap">
         <div id="status" class="status">Хаддл</div>
         <div id="timer" class="timer">30</div>
@@ -231,15 +51,31 @@
       <div class="controls">
         <button id="btn-snap" class="btn btn-snap">Снэп</button>
         <button id="btn-2kb" class="btn btn-2kb">2 КБ</button>
+        <button id="btn-penalty" class="btn btn-penalty">Нарушение</button>
       </div>
     </div>
   </div>
+
+  <!-- Модальное окно нарушения -->
+  <div id="modal-penalty" class="modal hidden">
+    <div class="modal-content">
+      <h2>Нарушение</h2>
+      <p>Повтор дауна?</p>
+      <div class="modal-buttons">
+        <button id="btn-penalty-repeat" class="modal-btn modal-btn-repeat">Повтор</button>
+        <button id="btn-penalty-loss" class="modal-btn modal-btn-loss">Потеря дауна</button>
+        <button id="btn-penalty-cancel" class="modal-btn modal-btn-cancel">Отмена</button>
+      </div>
+    </div>
+  </div>
+
   <div id="install-hint">PWA · Работает офлайн</div>
 
   <script>
     // ====== СОСТОЯНИЯ ======
     const State = { SETUP: 'setup', READY: 'ready', RUNNING: 'running', SNAP_WAIT: 'snap_wait' };
     let state = State.SETUP;
+    let previousState = State.SETUP; // 🔥 Запоминаем состояние перед модалкой
 
     // ====== DOM ======
     const $ = id => document.getElementById(id);
@@ -251,8 +87,17 @@
     const btnBallSet = $('btn-ball-set');
     const btnSnap = $('btn-snap');
     const btn2kb = $('btn-2kb');
+    const btnPenalty = $('btn-penalty');
+    const btnPenaltyReady = $('btn-penalty-ready');
     const timerEl = $('timer');
     const statusEl = $('status');
+    const downSetup = $('down-setup');
+    const downReady = $('down-ready');
+    const downRunning = $('down-running');
+    const modalPenalty = $('modal-penalty');
+    const btnPenaltyRepeat = $('btn-penalty-repeat');
+    const btnPenaltyLoss = $('btn-penalty-loss');
+    const btnPenaltyCancel = $('btn-penalty-cancel');
 
     // ====== iOS ДЕТЕКТ ======
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
@@ -307,7 +152,6 @@
       source.start(0);
     }
 
-    // Fallback: синтезированные звуки
     function playWhistleSynth() {
       const ctx = getAudio();
       const t0 = ctx.currentTime;
@@ -363,6 +207,38 @@
       }
     }
 
+    // ====== СЧЁТЧИК ДАУНОВ И ДРАЙВОВ ======
+    let down = 1;
+    let driveCount = 0;
+    const downNames = ['1st', '2nd', '3rd', '4th'];
+
+    function updateDownDisplay() {
+      const downText = downNames[down - 1];
+      downSetup.textContent = downText;
+      downReady.textContent = downText;
+      downRunning.textContent = downText;
+    }
+
+    function nextDown() {
+      down++;
+      if (down > 4) down = 1;
+      updateDownDisplay();
+    }
+
+    function resetDown() {
+      down = 1;
+      driveCount = 0;
+      updateDownDisplay();
+    }
+
+    function updatePenaltyButtonVisibility() {
+      if (driveCount > 0) {
+        btnPenaltyReady.classList.remove('hidden');
+      } else {
+        btnPenaltyReady.classList.add('hidden');
+      }
+    }
+
     // ====== ЛОГИКА ======
     let duration = 30;
     let remaining = 30;
@@ -379,11 +255,16 @@
       if (name === 'running') screenRunning.classList.remove('hidden');
     }
 
-    function resetTimer() {
+    function stopAllTimers() {
       clearInterval(tickInterval);
       clearInterval(snapInterval);
       tickInterval = null;
       snapInterval = null;
+      Vibrate.stop();
+    }
+
+    function resetTimer() {
+      stopAllTimers();
       tenSecAnnounced = false;
       remaining = duration;
       timerEl.textContent = remaining;
@@ -391,7 +272,7 @@
       statusEl.textContent = 'Хаддл';
       btnSnap.disabled = false;
       btn2kb.disabled = false;
-      Vibrate.stop();
+      btnPenalty.disabled = false;
     }
 
     function startHuddle() {
@@ -412,19 +293,20 @@
 
       if (remaining === 10 && !tenSecAnnounced) {
         tenSecAnnounced = true;
-        playSound('ten_seconds'); // 🔥 Теперь воспроизводится MP3
+        playSound('ten_seconds');
         Vibrate.ten();
       }
 
       if (remaining <= 0) {
-        clearInterval(tickInterval);
-        tickInterval = null;
+        stopAllTimers();
         playSound('siren');
         Vibrate.siren();
+        nextDown();
+        driveCount++;
+        updatePenaltyButtonVisibility();
         setTimeout(() => {
           state = State.READY;
           showScreen('ready');
-          Vibrate.stop();
         }, 2000);
       }
     }
@@ -443,6 +325,7 @@
 
       btnSnap.disabled = true;
       btn2kb.disabled = false;
+      btnPenalty.disabled = false;
       Vibrate.snap();
 
       let countdown = 7;
@@ -455,26 +338,61 @@
           statusEl.textContent = `Снэп через ${countdown}`;
           Vibrate.tap();
         } else {
-          clearInterval(snapInterval);
-          snapInterval = null;
+          stopAllTimers();
           playSound('siren');
           Vibrate.siren();
+          nextDown();
+          driveCount++;
+          updatePenaltyButtonVisibility();
           setTimeout(() => {
             state = State.READY;
             showScreen('ready');
-            Vibrate.stop();
           }, 2000);
         }
       }, 1000);
     }
 
     function on2KB() {
-      clearInterval(tickInterval);
-      clearInterval(snapInterval);
-      tickInterval = null;
-      snapInterval = null;
-      Vibrate.stop();
+      stopAllTimers();
       Vibrate.tap();
+      state = State.READY;
+      showScreen('ready');
+    }
+
+    // 🔥 Универсальная обработка кнопки "Нарушение"
+    function onPenaltyClick() {
+      // 🔥 Запоминаем состояние перед открытием модалки
+      previousState = state;
+
+      // 🔥 Если таймер идёт — останавливаем его
+      if (state === State.RUNNING || state === State.SNAP_WAIT) {
+        stopAllTimers();
+      }
+
+      // 🔥 Просто открываем модалку — НЕ запускаем таймер
+      modalPenalty.classList.remove('hidden');
+    }
+
+    function onPenaltyRepeat() {
+      modalPenalty.classList.add('hidden');
+      Vibrate.tap();
+      // Даун не меняется — возвращаемся на экран готовности
+      state = State.READY;
+      showScreen('ready');
+    }
+
+    function onPenaltyLoss() {
+      modalPenalty.classList.add('hidden');
+      Vibrate.tap();
+      nextDown(); // Даун +1
+      state = State.READY;
+      showScreen('ready');
+    }
+
+    function onPenaltyCancel() {
+      modalPenalty.classList.add('hidden');
+      Vibrate.tap();
+      // Возвращаемся на экран готовности (таймер уже остановлен)
       state = State.READY;
       showScreen('ready');
     }
@@ -482,14 +400,12 @@
     // ====== ОБРАБОТЧИКИ ======
     btnStartSetup.addEventListener('click', () => {
       duration = parseInt(selDuration.value, 10);
-
       getAudio();
-
-      // Загружаем все звуки
       loadSound('whistle', 'sounds/whistle.mp3');
       loadSound('siren', 'sounds/siren.mp3');
-      loadSound('ten_seconds', 'sounds/ten_seconds.mp3'); // 🔥 НОВОЕ
-
+      loadSound('ten_seconds', 'sounds/ten_seconds.mp3');
+      resetDown();
+      updatePenaltyButtonVisibility();
       Vibrate.tap();
       state = State.READY;
       showScreen('ready');
@@ -503,6 +419,11 @@
 
     btnSnap.addEventListener('click', onSnap);
     btn2kb.addEventListener('click', on2KB);
+    btnPenalty.addEventListener('click', onPenaltyClick);
+    btnPenaltyReady.addEventListener('click', onPenaltyClick); // 🔥 Теперь одна функция
+    btnPenaltyRepeat.addEventListener('click', onPenaltyRepeat);
+    btnPenaltyLoss.addEventListener('click', onPenaltyLoss);
+    btnPenaltyCancel.addEventListener('click', onPenaltyCancel);
 
     // ====== PWA: Service Worker ======
     if ('serviceWorker' in navigator) {
@@ -514,6 +435,7 @@
     }
 
     showScreen('setup');
+    updateDownDisplay();
   </script>
 </body>
 
