@@ -13,12 +13,12 @@
   <link rel="icon" type="image/svg+xml" href="icon.svg" />
   <link rel="apple-touch-icon" href="icon.svg" />
   <link rel="stylesheet" href="styles.css" />
-  <title>HuddleSnap v3.6</title>
+  <title>HuddleSnap v3.7</title>
 </head>
 
 <body>
   <div id="app">
-    <h1>🏈 HuddleSnap<span class="version">v3.6</span></h1>
+    <h1>🏈 HuddleSnap<span class="version">v3.7</span></h1>
 
     <!-- Экран настройки -->
     <div id="screen-setup" class="setup">
@@ -354,7 +354,10 @@
 
     function on2KB() {
       stopAllTimers();
-      Vibrate.tap();
+      Vibrate.snap();
+      nextDown();
+      driveCount++;
+      updatePenaltyButtonVisibility();
       state = State.READY;
       showScreen('ready');
     }
